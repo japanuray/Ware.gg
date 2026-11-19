@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>School Arcade – Free Version</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--glow:#1a2040;--accent:#7c5cff;--panel:#121722;--line:#252e3d;--muted:#98a3b5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0%,var(--glow) 0,transparent 36%),var(--bg);color:#f5f7fb;font-family:Arial,Helvetica,sans-serif}
+header{padding:22px clamp(18px,5vw,64px);display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line)}
+.brand{font-weight:900;letter-spacing:-1px;font-size:23px}.brand span{color:var(--accent)}
+.badge{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px}
+main{width:min(1100px,92vw);margin:30px auto 60px}
+h1{font-size:clamp(30px,6vw,48px);margin:0 0 8px;letter-spacing:-2px}
+.sub{color:var(--muted);margin:0 0 22px;line-height:1.5}
+button{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;font-family:inherit}
+button:hover{filter:brightness(1.12)}.secondary{background:#252e3d}
+.search{position:relative;margin:0 0 14px}
+.search input{width:100%;padding:14px 44px;font-size:16px;color:#f5f7fb;background:var(--panel);border:1px solid var(--line);border-radius:14px;outline:none;font-family:inherit}
+.search input:focus{border-color:var(--accent)}
+.search .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none}
+.search .clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:none;padding:6px 10px;background:#252e3d;font-size:13px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px}
+.chip{flex:0 0 auto;background:#252e3d;border:1px solid #354155;padding:9px 14px;border-radius:999px;font-size:14px}
+.chip.on{background:var(--accent);border-color:var(--accent)}
+.bgrow{display:flex;align-items:center;gap:10px;margin:0 0 18px;color:var(--muted);font-size:14px;flex-wrap:wrap}
+.dots{display:flex;gap:8px}
+.dot{width:28px;height:28px;padding:0;border-radius:50%;border:2px solid transparent}
+.dot.on{border-color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.card{background:linear-gradient(145deg,#171e2b,#10151e);border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;flex-direction:column;align-items:flex-start}
+.icon{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:28px;background:rgba(255,255,255,.08);margin-bottom:14px}
+.card h2{font-size:18px;margin:0 0 6px}.card p{color:var(--muted);font-size:13px;line-height:1.45;margin:0 0 16px;flex:1}
+#none{display:none;text-align:center;color:var(--muted);padding:30px 0}
+#player{display:none;margin-top:26px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.phead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.phead h2{margin:0;font-size:20px}
+.pbtns{display:flex;gap:8px}.pbtns a{text-decoration:none;color:#fff;padding:11px 15px;border-radius:10px;font-weight:700;background:#252e3d}
+.frame{height:min(70vh,650px);min-height:380px;background:#05070a;border-radius:12px;overflow:hidden}
+iframe{width:100%;height:100%;border:0}
+.hint{color:var(--muted);font-size:12px;line-height:1.5;margin:10px 2px 0}
+footer{text-align:center;color:#778195;font-size:12px;padding:24px}
+#load{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:#090b10;text-align:center;cursor:pointer;transition:opacity .6s,visibility .6s}
+#load.hide{opacity:0;visibility:hidden}
+#load h2{font-size:clamp(34px,9vw,64px);margin:0 0 18px;letter-spacing:-2px}
+.bar{width:min(260px,70vw);height:8px;margin:0 auto;background:#252e3d;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:40%;background:#7c5cff;border-radius:99px;animation:mv 1.2s ease-in-out infinite}
+@keyframes mv{0%{margin-left:-40%}100%{margin-left:100%}}
+</style>
+</head>
+<body>
+<div id="load"><div><h2>Free Version</h2><div class="bar"><i></i></div></div></div>
+<header><div class="brand">SCHOOL<span>ARCADE</span></div><span class="badge">Free Version</span></header>
+<main>
+<h1>Pick a game.</h1>
+<p class="sub">Search, choose a section, and jump in.</p>
+<div class="search"><span class="ico">🔍</span><input id="q" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games"><button id="clr" class="clr" type="button" aria-label="Clear search">✕</button></div>
+<div class="chips" id="chips"></div>
+<div class="bgrow"><span>Background</span><div class="dots" id="dots"></div></div>
+<section class="grid" id="grid"></section>
+<p id="none">No games found. Try a different search. 🎮</p>
+<section id="player">
+<div class="phead"><h2 id="ptitle">Game</h2><div class="pbtns"><a id="pext" href="#" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a><button class="secondary" id="pclose" type="button">Close</button></div></div>
+<div class="frame"><iframe id="pframe" title="Game" src="about:blank" allow="fullscreen; autoplay; gamepad" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+<p class="hint">If a game does not load here, tap “Open in new tab” to play it on its own site.</p>
+</section>
+</main>
+<footer>Free version of School Arcade</footer>
+<script>
+(function(){
+ var SECTIONS=["⚽ Sports","🔫 Gun Games","🚗 Car Sims","🏃 Obbys","🧩 Puzzle"];
+ var G=[
+  ["🏀","Basket Random","Wild physics basketball for one or two players.","https://poki.com/en/g/basket-random",0],
+  ["⚽","Soccer Random","Silly physics soccer with random twists.","https://poki.com/en/g/soccer-random",0],
+  ["🏐","Volley Random","Goofy one-button volleyball.","https://poki.com/en/g/volley-random",0],
+  ["🥊","Boxing Random","Floppy-arm boxing chaos.","https://poki.com/en/g/boxing-random",0],
+  ["🏈","Retro Bowl","Retro-style football with team management.","https://retrobowl.me/",0],
+  ["🔫","Krunker","Fast blocky arena battles in your browser.","https://krunker.io/",1],
+  ["🥚","Shell Shockers","Cartoon egg battles with friends.","https://shellshock.io/",1],
+  ["🎯","Venge.io","Fast 3D arena matches.","https://venge.io/",1],
+  ["🟦","Voxiom.io","Block-world battles with building.","https://voxiom.io/",1],
+  ["🪂","Zombs Royale","Drop in, loot up, and be the last one standing.","https://zombsroyale.io/",1],
+  ["🚘","GEO Ride","Explore real-world roads in a 3D driving sim.","https://playgeoride.com/play",2],
+  ["🏙️","Drive Quest","Free-roam driving, drifting, and car customization.","https://drivequest.io/",2],
+  ["🚔","Cars Simulator","Pick a vehicle and cruise open environments.","https://www.kiwigames.io/game/cars-simulator",2],
+  ["🚦","Car Driving Simulator 3D","Drive a town with traffic lights and routes.","https://www.anonarcade.com/car-games/car-driving-simulator-3d/",2],
+  ["🏁","OpenRacer","A racing sim with detailed car physics.","https://openracer.eu/",2],
+  ["🏃","Parkour Block","Jump through blocky obstacle courses.","https://poki.com/en/g/parkour-block",3],
+  ["🚀","Run 3","Run through space tunnels without falling off.","https://www.coolmathgames.com/0-run-3",3],
+  ["🪢","Stickman Hook","Swing your stickman through each level.","https://poki.com/en/g/stickman-hook",3],
+  ["🌀","Tunnel Rush","Race through a twisting tunnel without crashing.","https://www.crazygames.com/game/tunnel-rush",3],
+  ["🟢","Slope","Roll a ball down a fast neon slope.","https://www.crazygames.com/game/slope",3],
+  ["🔢","2048","Slide and merge tiles to reach 2048.","https://play2048.co/",4],
+  ["🧱","Tetris","Stack falling blocks and clear the lines.","https://tetris.com/play-tetris",4],
+  ["🧩","Sudoku","Classic number puzzle with every difficulty.","https://sudoku.com/",4],
+  ["💣","Minesweeper","Clear the board without hitting a mine.","https://minesweeperonline.com/",4],
+  ["⚗️","Little Alchemy 2","Combine elements to discover new things.","https://littlealchemy2.com/",4]
+ ];
+ var COLORS=[["Black","#090b10","#1a2040","#7c5cff"],["Red","#3a0d12","#8a2430","#e5484d"],["Orange","#3a2208","#8a4d12","#f08c1a"],["Yellow","#3a3208","#8a7a12","#e0b400"],["Green","#0b2e1c","#1f7a4a","#20b46a"],["Blue","#0c1f3f","#1f4fa0","#2f80ff"],["Purple","#1a1240","#4a2fb0","#7c5cff"],["Pink","#3a0f2e","#a02f7e","#e255b5"]];
+ var $=function(id){return document.getElementById(id)};
+ var grid=$("grid"),cards=[],cat=-1;
+ function mk(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x)e.textContent=x;return e;}
+ G.forEach(function(g){
+  var c=mk("article","card"),i=mk("div","icon",g[0]),h=mk("h2","",g[1]),p=mk("p","",g[2]),b=mk("button","","Play "+g[1]);
+  b.type="button";b.addEventListener("click",function(){openGame(g[3],g[1],g[0]);});
+  c.append(i,h,p,b);c.dataset.cat=g[4];grid.appendChild(c);cards.push(c);
+ });
+ function filter(){
+  var q=$("q").value.trim().toLowerCase(),n=0;
+  cards.forEach(function(c){var ok=(cat<0||+c.dataset.cat===cat)&&(!q||c.textContent.toLowerCase().indexOf(q)>-1);c.style.display=ok?"":"none";if(ok)n++;});
+  $("none").style.display=n?"none":"block";$("clr").style.display=q?"block":"none";
+ }
+ $("q").addEventListener("input",filter);
+ $("clr").addEventListener("click",function(){$("q").value="";filter();$("q").focus();});
+ var chips=$("chips");
+ ["All"].concat(SECTIONS).forEach(function(name,idx){
+  var b=mk("button","chip"+(idx===0?" on":""),name);b.type="button";
+  b.addEventListener("click",function(){cat=idx-1;chips.querySelectorAll(".chip").forEach(function(x){x.classList.toggle("on",x===b);});filter();});
+  chips.appendChild(b);
+ });
+ var dots=$("dots");
+ function apply(i){
+  var c=COLORS[i],r=document.documentElement.style;
+  r.setProperty("--bg",c[1]);r.setProperty("--glow",c[2]);r.setProperty("--accent",c[3]);
+  dots.querySelectorAll(".dot").forEach(function(d,j){d.classList.toggle("on",j===i);});
+  try{localStorage.setItem("freeArcadeBg",i);}catch(e){}
+ }
+ COLORS.forEach(function(c,i){var d=mk("button","dot");d.type="button";d.title=c[0];d.setAttribute("aria-label",c[0]+" background");d.style.background=c[3];d.addEventListener("click",function(){apply(i);});dots.appendChild(d);});
+ var s=0;try{s=+localStorage.getItem("freeArcadeBg")||0;}catch(e){}apply(s<COLORS.length?s:0);
+ function openGame(url,title,emoji){
+  $("ptitle").textContent=emoji+" "+title;$("pext").href=url;$("pframe").src=url;
+  $("player").style.display="block";$("player").scrollIntoView({behavior:"smooth",block:"start"});
+ }
+ $("pclose").addEventListener("click",function(){$("player").style.display="none";$("pframe").src="about:blank";});
+ var ld=$("load");function hide(){ld.classList.add("hide");setTimeout(function(){ld.remove();},700);}
+ ld.addEventListener("click",hide);setTimeout(hide,2500);
+})();
+</script>
+</body>
+</html>
